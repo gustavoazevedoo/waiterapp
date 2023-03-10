@@ -8,6 +8,9 @@ interface OrderModalProps {
   visible: boolean;
   order: Order | null;
   onClose: () => void;
+  onCancelOrder: () => Promise<void>;
+  isLoading: boolean;
+  onChangeOrderStatus: () => void;
 }
 
 const orderStatus = {
@@ -25,7 +28,7 @@ const orderStatus = {
   }
 };
 
-export function OrderModal({ visible, order, onClose }: OrderModalProps) {
+export function OrderModal({ visible, order, onClose, onCancelOrder, isLoading, onChangeOrderStatus }: OrderModalProps) {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -88,11 +91,19 @@ export function OrderModal({ visible, order, onClose }: OrderModalProps) {
         </OrderDetails>
 
         <Actions>
-          <button type="button" className="primary">
-            <span>{order.status === "IN_PRODUCTION" ? "✅" : "👩‍🍳"}</span>
-            <strong>{order.status === "IN_PRODUCTION" ? "Concluir Pedido" : "Iniciar Produção"}</strong>
-          </button>
-          <button type="button" className="secondary">
+          {order.status !== "DONE" && (
+            <button type="button" className="primary" disabled={isLoading} onClick={onChangeOrderStatus}>
+              <span>{order.status === "IN_PRODUCTION" ? "✅" : "👩‍🍳"}</span>
+              <strong>{order.status === "IN_PRODUCTION" ? "Concluir Pedido" : "Iniciar Produção"}</strong>
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="secondary"
+            onClick={onCancelOrder}
+            disabled={isLoading}
+          >
             Cancelar Pedido
           </button>
         </Actions>
